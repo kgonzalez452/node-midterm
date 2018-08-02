@@ -1,0 +1,11 @@
+main {
+  text-align: center;
+  margin: 0 auto;
+}
+.textbox {
+  margin: 5px;
+  width: 100%;
+}
+input {
+  font-size: 18px;
+}
