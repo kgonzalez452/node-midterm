@@ -1,102 +1,42 @@
 var outfitRouter = require("express").Router();
-module.exports = function(app, server) {
-  var outfits = [
-    {
-      id: 1,
-      name: "Looking Cool",
-      style: "Grease Look",
-      gender: "male"
-    },
-    {
-      id: 2,
-      name: "Its Too Hot",
-      style: "casual",
-      gender: "male"
-    }
-  ];
-  var id = 2;
-
-  var updateId = function(req, res, next) {
-    if (!req.body.id) {
-      id++;
-      req.body.id = id + "";
-    }
-
-    next();
-  };
-
-  outfitRouter.param("id", (req, res, next, id) => {
-    var outfit = outfits.find(outfit => {
-      return outfit.id == req.params.id;
-    });
-
-    if (outfit) {
-      req.outfit = outfit;
-      next();
-    } else {
-      res.send();
-    }
+module.exports = function(app, outfits) {
+  app.get("/", function(req, res) {
+    res.send(getAllOutfits(outfits));
   });
 
-  outfitRouter.get("/", (req, res) => {
-    // GET outfits
-    res.json(outfits);
+  app.get("/add", function(req, res) {
+    res.render("index.html");
   });
 
-  outfitRouter.get("/:id", (req, res) => {
-    // GET outfit.id
-    // var outfit = outfits.find(outfit => {
-    //   return outfit.id == req.params.id;
-    // });
-    var outfit = req.outfit;
-    res.json(outfit || {});
+  app.get("/add-submit", function(req, res) {
+    outfits.push(req.query.name);
+    res.send(getAllOutfits(outfits));
   });
 
-  outfitRouter.post("/", updateId, (req, res) => {
-    // POST outfit.id
-    var outfit = req.body;
-    // id++;
-    // outfit.id = id + '';
-
-    outfits.push(outfit);
-
-    res.json(outfit);
+  app.get("/update", function(req, res) {
+    res.render("update.html");
   });
 
-  // helper function for patch
-  function findoutfitIndex(id) {
-    // findIndex stuff
-    return outfitIndex;
-  }
-
-  outfitRouter.put("/:id", (req, res) => {
-    // PUT/REPLACE outfit.id
-    var update = req.body;
-    if (update.id) {
-      delete update.id;
-    }
-
-    var outfit = outfits.findIndex(outfit => outfit.id == req.params.id);
-    if (!outfits[outfit]) {
-      res.send();
-    } else {
-      var updatedoutfit = Object.assign(outfits[outfit], update);
-      //_.assign(outfits[outfit], update);
-      res.json(updatedoutfit);
-    }
-    console.log(outfit);
+  app.get("/update-submit", function(req, res) {
+    outfits.splice(req.query.pos, 1, req.query.name);
+    res.send(getAllOutfits(outfits));
   });
 
-  outfitRouter.delete("/:id", (req, res) => {
-    // DELETE outfit.id
-    var outfit = outfits.findIndex(outfit => outfit.id == req.params.id);
-    if (!outfits[outfit]) {
-      res.send();
-    } else {
-      var deletedoutfit = outfits[outfit];
-      outfits.splice(outfit, 1);
-      res, json(deletedoutfit);
-    }
+  app.get("/del", function(req, res) {
+    res.render("delete.html");
+  });
+
+  app.get("/del-submit", function(req, res) {
+    outfits.splice(req.query.pos, 1);
+    res.send(getAllOutfits(outfits));
   });
 };
+
+function getAllOutfits(outfits) {
+  var tgs = "";
+  for (var i = 0; i < outfits.length; i++) {
+    tgs += "<li>" + outfits[i] + "</li>";
+  }
+  return "<ol>" + tgs + "</ol>";
+}
 module.exports = outfitRouter;
