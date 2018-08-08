@@ -19,7 +19,7 @@ app.engine("html", require("ejs").renderFile);
 // When a request comes in for '/outfit' we want to use this router >
 app.use("/outfits", outfitRouter); // uses the outfit.js router to make code cleaner and more organized, and easier to recreate new api's.
 
-app.use((err, req, res, next), {
+app.use((err, req, res, next), function () {
   // catches all errors
   if (err) {
     console.log(err.message);
